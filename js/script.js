@@ -1,6 +1,4 @@
-
-
-/*requête de l’API pour lui demander l’ensemble des produits*/
+/*Requête de l’API pour lui demander l’ensemble des produits*/
 
 fetch('http://localhost:3000/api/products')
   .then(function(reponse) {
@@ -16,8 +14,10 @@ fetch('http://localhost:3000/api/products')
     console.log(erreur);
   });
 
-const produits = document.getElementById("items");
 
+/*Insertions des données récupérées dans le code HTML*/
+
+const produits = document.getElementById("items");
   
 let produit = function(donnees) {
   for (let i = 0; i < donnees.length; i++) {
@@ -32,7 +32,3 @@ let produit = function(donnees) {
     produits.insertAdjacentHTML("afterbegin", codeHtmlProduits);
   }
 };
-
-/*let tailleCarte = document.querySelector('.items a');
-
-tailleCarte.style.maxWidth='21px';*/
