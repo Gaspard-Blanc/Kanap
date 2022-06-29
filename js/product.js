@@ -3,7 +3,7 @@
 let pageCourante = window.location.href;
 let url = new URL(pageCourante);
 let idProduit = url.searchParams.get("id");
-console.log(idProduit);
+console.log("idProduit: " + idProduit);
 
 const image = document.querySelector(".item__img");
 const imageProduit = document.createElement("img");
@@ -14,12 +14,9 @@ const optionCouleur = document.getElementById("colors");
 const nombreProduit = document.getElementById("quantity");
 const ajoutPanier = document.getElementById("addToCart");
 
-let quantitéSelectionner = "";
-let couleurSelectionner = "";
 let panier = [];
 
 /*Requête de l’API pour lui demander les informations du produit*/
-
 fetch("http://localhost:3000/api/products/" + idProduit)
   .then(function (reponse) {
     if (reponse.ok) {
@@ -27,10 +24,10 @@ fetch("http://localhost:3000/api/products/" + idProduit)
     }
   })
   .then(function (informations) {
+    console.log("Informations sur le produit:");
     console.log(informations);
 
     /*Insertions dans le code HTML des données récupérées*/
-
     image.appendChild(imageProduit);
     imageProduit.setAttribute("src", informations.imageUrl);
     imageProduit.setAttribute("alt", informations.altTxt);
@@ -54,7 +51,7 @@ fetch("http://localhost:3000/api/products/" + idProduit)
 nombreProduit.addEventListener("input", (e) => {
   if (e.target.value > 0 && e.target.value <= 100) {
     quantitéSelectionner = e.target.value;
-    console.log(quantitéSelectionner);
+    console.log("quantité chosie: " + quantitéSelectionner);
   } else {
     alert("Veuillez choisir une quantité comprise entre 0 et 100");
     nombreProduit.setAttribute("value", (e.target.value = 0));
@@ -65,42 +62,47 @@ nombreProduit.addEventListener("input", (e) => {
 optionCouleur.addEventListener("input", (e) => {
   if (e.target.value != "") {
     couleurSelectionner = e.target.value;
-    console.log(couleurSelectionner);
+    console.log("couleur choisie: " + couleurSelectionner);
   } else {
     alert("Veuillez selectionner une couleur");
   }
 });
 
-/* Ajouter des produits dans le localStorage*/
-ajoutPanier.addEventListener("click", () => {
-  panier = [idProduit, couleurSelectionner, quantitéSelectionner];
-  console.log(panier);
+/* Ajouter des produits dans le localStorage au clic du bouton*/
+ajoutPanier.addEventListener("click", (e) => {
+  e.preventDefault;
+  let couleur = optionCouleur.value;
+  let quantité = Number(nombreProduit.value);
+  let produitDansLocalStorage = [];
+  panier = [idProduit, couleur, quantité];
 
-  let produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
+  /* Si il y a déjà des produits dans le localStorage */
+  if (localStorage.getItem("produit")) {
+    /*récupération des donnés dans le localStorage*/
+    produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
 
-  /* Si il y a déjà des produits dans le localStorage*/
-  if (produitDansLocalStorage) {
-    produitDansLocalStorage.push(panier);
-    localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+    /* Vérification qu'un produit de même id et même couleur se trouve déjà dans localStorage*/
+    let objetPanier = produitDansLocalStorage.find(
+      (element) =>
+        element[0] === produitDansLocalStorage[0] &&
+        element[1] === produitDansLocalStorage[1]
+    );
 
-    console.log(produitDansLocalStorage);
+    /* Si même id et même couleur, alors ajout de la quantité*/
+    if (objetPanier === undefined) {
+      panier[2] += produitDansLocalStorage[2];
+
+      /* Si different, ajout au panier*/
+    } else if (objetPanier != undefined) {
+      produitDansLocalStorage.push(panier);
+    }
+
+    /* Envoie au localeStorage*/
+    localStorage.setItem("produit", JSON.stringify(panier));
   } else {
-    /* Si le localStorage est vide*/
+    /* Si le localStorage est vide, envoie au panier puis dans localStorage*/
     produitDansLocalStorage = [];
     produitDansLocalStorage.push(panier);
-    localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
-
-    console.log(produitDansLocalStorage);
+    localStorage.setItem("produit", JSON.stringify(panier));
   }
 });
-
-/*let panierStocker = JSON.stringify(panier);
-  if (panier[0] === idProduit && panier[1] === couleurSelectionner) {
-    panier[2] + quantitéSelectionner;
-
-  } else {
-    panier = [idProduit, couleurSelectionner, quantitéSelectionner];
-   
-    
-  }
-});*/
