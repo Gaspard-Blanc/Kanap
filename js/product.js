@@ -78,31 +78,32 @@ ajoutPanier.addEventListener("click", (e) => {
 
   /* Si il y a déjà des produits dans le localStorage */
   if (localStorage.getItem("produit")) {
-    /*récupération des donnés dans le localStorage*/
+    /*récupération des donnés dans le localStorage */
     produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
 
-    /* Vérification qu'un produit de même id et même couleur se trouve déjà dans localStorage*/
-    let objetPanier = produitDansLocalStorage.find(
-      (element) =>
-        element[0] === produitDansLocalStorage[0] &&
-        element[1] === produitDansLocalStorage[1]
+    /* Vérification qu'un produit de même id et même couleur se trouve déjà dans localStorage */
+    let objetPanier = produitDansLocalStorage.findIndex(
+      (element) => element[0] === panier[0] && element[1] === panier[1]
     );
-
-    /* Si même id et même couleur, alors ajout de la quantité*/
-    if (objetPanier === undefined) {
-      panier[2] += produitDansLocalStorage[2];
-
-      /* Si different, ajout au panier*/
-    } else if (objetPanier != undefined) {
+    console.log(objetPanier);
+    console.log(panier);
+    console.log(produitDansLocalStorage);
+    /* Si même id et même couleur, alors ajout de la quantité */
+    if (objetPanier != -1) {
+      produitDansLocalStorage[objetPanier][2] += panier[2];
+    } else if ((objetPanier = -1)) {
+      /* Si different, alors ajout au panier */
       produitDansLocalStorage.push(panier);
     }
 
-    /* Envoie au localeStorage*/
-    localStorage.setItem("produit", JSON.stringify(panier));
+    /* Envoie au localeStorage */
+    localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+
+    /* Si le localStorage est vide, envoie au panier puis dans localStorage */
   } else {
-    /* Si le localStorage est vide, envoie au panier puis dans localStorage*/
     produitDansLocalStorage = [];
     produitDansLocalStorage.push(panier);
-    localStorage.setItem("produit", JSON.stringify(panier));
+    localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+    console.log(produitDansLocalStorage);
   }
 });
