@@ -1,4 +1,10 @@
 const produits = document.getElementById("cart__items");
+const nombreTotalArticle = document.getElementById("totalQuantity");
+const prixTotal = document.getElementById("totalPrice");
+let nombreArticle = 0;
+let prixParArticle = 0;
+let prixTotalArticle = 0;
+
 /* Récupérer les données du localStorage */
 let produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
 let produitPanier = [];
@@ -6,6 +12,10 @@ console.log(produitDansLocalStorage);
 
 for (let i = 0; i < produitDansLocalStorage.length; i++) {
   produitPanier = produitDansLocalStorage[i];
+  /* Calcul du nombre d'article */
+  nombreArticle += produitPanier[2];
+
+  let quantitéParProduit = produitPanier[2];
 
   /*Requête de l’API pour lui demander les information du produit*/
   fetch("http://localhost:3000/api/products/" + produitPanier[0])
@@ -17,6 +27,14 @@ for (let i = 0; i < produitDansLocalStorage.length; i++) {
     .then(function (donnees) {
       console.log(donnees);
       produit(donnees, produitDansLocalStorage[i]);
+
+      /* Calcul du prix total */
+      prixParArticle = donnees.price * quantitéParProduit;
+      prixTotalArticle += prixParArticle;
+      console.log(prixTotalArticle);
+
+      console.log(donnees.price);
+      console.log(prixParArticle);
     })
     .catch(function (erreur) {
       console.log(erreur);
@@ -47,4 +65,6 @@ let produit = function (donnees, produitPanier) {
                     </div>
                     </article>`;
   produits.insertAdjacentHTML("afterbegin", codeHtmlProduits);
+  nombreTotalArticle.textContent = nombreArticle;
+  prixTotal.textContent = prixTotalArticle;
 };
