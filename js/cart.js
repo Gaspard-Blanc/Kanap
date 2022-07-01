@@ -31,10 +31,9 @@ for (let i = 0; i < produitDansLocalStorage.length; i++) {
       /* Calcul du prix total */
       prixParArticle = donnees.price * quantitéParProduit;
       prixTotalArticle += prixParArticle;
-      console.log(prixTotalArticle);
 
-      console.log(donnees.price);
-      console.log(prixParArticle);
+      /* Affichage du prix totale dans le code html */
+      prixTotal.textContent = prixTotalArticle;
     })
     .catch(function (erreur) {
       console.log(erreur);
@@ -55,8 +54,8 @@ let produit = function (donnees, produitPanier) {
     </div>
     <div class="cart__item__content__settings">
     <div class="cart__item__content__settings__quantity">
-                    <p>Qté : </p>
-                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${produitPanier[2]}">
+    <p>Qté : </p>
+    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${produitPanier[2]}">
                     </div>
                     <div class="cart__item__content__settings__delete">
                     <p class="deleteItem">Supprimer</p>
@@ -66,5 +65,4 @@ let produit = function (donnees, produitPanier) {
                     </article>`;
   produits.insertAdjacentHTML("afterbegin", codeHtmlProduits);
   nombreTotalArticle.textContent = nombreArticle;
-  prixTotal.textContent = prixTotalArticle;
 };
