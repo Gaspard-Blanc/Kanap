@@ -47,29 +47,34 @@ fetch("http://localhost:3000/api/products/" + idProduit)
     console.log(erreur);
   });
 
-/* Controle que la quantité se situe entre 0 et 100 */
-nombreProduit.addEventListener("input", (e) => {
-  if (e.target.value > 0 && e.target.value <= 100) {
-    quantitéSelectionner = e.target.value;
-    console.log("quantité chosie: " + quantitéSelectionner);
-  } else {
-    alert("Veuillez choisir une quantité comprise entre 0 et 100");
-    nombreProduit.setAttribute("value", (e.target.value = 0));
-  }
-});
+function controleOption() {
+  /* Controle que la quantité se situe entre 0 et 100 */
+  nombreProduit.addEventListener("input", (e) => {
+    e.stopPropagation;
+    if (e.target.value > 0 && e.target.value <= 100) {
+      quantitéSelectionner = e.target.value;
+      console.log("quantité chosie: " + quantitéSelectionner);
+    } else {
+      alert("Veuillez choisir une quantité comprise entre 0 et 100");
+      nombreProduit.setAttribute("value", (e.target.value = 0));
+    }
+  });
 
-/* Controle q'une couleur est bien sélectionnée */
-optionCouleur.addEventListener("input", (e) => {
-  if (e.target.value != "") {
-    couleurSelectionner = e.target.value;
-    console.log("couleur choisie: " + couleurSelectionner);
-  } else {
-    alert("Veuillez selectionner une couleur");
-  }
-});
+  /* Controle q'une couleur est bien sélectionnée */
+  optionCouleur.addEventListener("input", (e) => {
+    e.stopPropagation;
+    if (e.target.value != "") {
+      couleurSelectionner = e.target.value;
+      console.log("couleur choisie: " + couleurSelectionner);
+    } else {
+      alert("Veuillez selectionner une couleur");
+    }
+  });
+}
 
 /* Ajouter des produits dans le localStorage au clic du bouton*/
 ajoutPanier.addEventListener("click", (e) => {
+  controleOption();
   e.preventDefault;
   let couleur = optionCouleur.value;
   let quantité = Number(nombreProduit.value);
@@ -85,9 +90,7 @@ ajoutPanier.addEventListener("click", (e) => {
     let objetPanier = produitDansLocalStorage.findIndex(
       (element) => element[0] === panier[0] && element[1] === panier[1]
     );
-    console.log(objetPanier);
-    console.log(panier);
-    console.log(produitDansLocalStorage);
+
     /* Si même id et même couleur, alors ajout de la quantité */
     if (objetPanier != -1) {
       produitDansLocalStorage[objetPanier][2] += panier[2];
@@ -104,6 +107,5 @@ ajoutPanier.addEventListener("click", (e) => {
     produitDansLocalStorage = [];
     produitDansLocalStorage.push(panier);
     localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
-    console.log(produitDansLocalStorage);
   }
 });
