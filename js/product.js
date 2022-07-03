@@ -46,8 +46,8 @@ fetch("http://localhost:3000/api/products/" + idProduit)
     console.log(erreur);
   });
 
+/* Controle que la quantité se situe entre 0 et 100 */
 function controleOption() {
-  /* Controle que la quantité se situe entre 0 et 100 */
   nombreProduit.addEventListener("input", (e) => {
     e.stopPropagation;
     if (e.target.value > 0 && e.target.value <= 100) {
@@ -100,11 +100,13 @@ ajoutPanier.addEventListener("click", (e) => {
 
     /* Envoie au localeStorage */
     localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+    alert("Votre produit a été ajouter au panier");
 
     /* Si le localStorage est vide, envoie au panier puis dans localStorage */
   } else {
     produitDansLocalStorage = [];
     produitDansLocalStorage.push(panier);
     localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+    alert("Votre produit a été ajouter au panier");
   }
 });
