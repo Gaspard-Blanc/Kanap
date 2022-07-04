@@ -4,12 +4,14 @@ let url = new URL(pageCourante);
 let idProduit = url.searchParams.get("id");
 console.log("idProduit: " + idProduit);
 
+/* Récupérations des éléments du code HTML */
 const image = document.querySelector(".item__img");
 const imageProduit = document.createElement("img");
 const nomProduit = document.getElementById("title");
 const prixProduit = document.getElementById("price");
 const descriptionProduit = document.getElementById("description");
 const optionCouleur = document.getElementById("colors");
+console.log(optionCouleur);
 const nombreProduit = document.getElementById("quantity");
 const ajoutPanier = document.getElementById("addToCart");
 
@@ -41,23 +43,91 @@ fetch("http://localhost:3000/api/products/" + idProduit)
       couleurProduit.setAttribute("value", couleur[i]);
       couleurProduit.textContent = couleur[i];
     }
+
+    controleOption();
+    ajoutProduit();
   })
   .catch(function (erreur) {
     console.log(erreur);
   });
 
-/* Controle que la quantité se situe entre 0 et 100 */
+/* Ajouter des produits dans le localStorage au clic du bouton*/
+function ajoutProduit() {
+  ajoutPanier.addEventListener("click", () => {
+    controleOption(ajoutPanier);
+    let couleur = optionCouleur.value;
+    let quantité = Number(nombreProduit.value);
+    let produitDansLocalStorage = [];
+    panier = [idProduit, couleur, quantité];
+
+    /* Controle que la quantité se situe entre 0 et 100 */
+    if (
+      nombreProduit.value > 0 &&
+      nombreProduit.value <= 100 &&
+      nombreProduit.value != 0
+    ) {
+      quantitéSelectionner = nombreProduit.value;
+      console.log("quantité chosie: " + quantitéSelectionner);
+    } else {
+      alert("Veuillez choisir une quantité comprise entre 0 et 100");
+      nombreProduit.setAttribute("value", (nombreProduit.value = 0));
+      return;
+    }
+
+    /* Controle q'une couleur est bien sélectionnée */
+    if (optionCouleur.value != "") {
+      couleurSelectionner = optionCouleur.value;
+      console.log("couleur choisie: " + couleurSelectionner);
+    } else {
+      alert("Veuillez selectionner une couleur");
+      return;
+    }
+
+    /* Si il y a déjà des produits dans le localStorage */
+    if (localStorage.getItem("produit")) {
+      /*récupération des donnés dans le localStorage */
+      produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
+
+      /* Vérification qu'un produit de même id et même couleur se trouve déjà dans localStorage */
+      let objetPanier = produitDansLocalStorage.findIndex(
+        (element) => element[0] === panier[0] && element[1] === panier[1]
+      );
+
+      /* Si même id et même couleur, alors ajout de la quantité */
+      if (objetPanier != -1) {
+        produitDansLocalStorage[objetPanier][2] += panier[2];
+      } else if ((objetPanier = -1)) {
+        /* Si different, alors ajout au panier */
+        produitDansLocalStorage.push(panier);
+      }
+
+      /* Envoie au localeStorage */
+      localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+      alert("Votre produit a été ajouter au panier");
+
+      /* Si le localStorage est vide, envoie au panier puis dans localStorage */
+    } else {
+      produitDansLocalStorage = [];
+      produitDansLocalStorage.push(panier);
+      localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+      alert("Votre produit a été ajouter au panier");
+    }
+  });
+}
+
+/* Fonction de contrôle */
 function controleOption() {
-  nombreProduit.addEventListener("input", (e) => {
+  /* Controle que la quantité se situe entre 0 et 100 */
+  /*nombreProduit.addEventListener("input", (e) => {
     e.stopPropagation;
-    if (e.target.value > 0 && e.target.value <= 100) {
+    if (e.target.value > 0 && e.target.value <= 100 && e.target.value != 0) {
       quantitéSelectionner = e.target.value;
       console.log("quantité chosie: " + quantitéSelectionner);
     } else {
       alert("Veuillez choisir une quantité comprise entre 0 et 100");
       nombreProduit.setAttribute("value", (e.target.value = 0));
     }
-  });
+  });*/
 
   /* Controle q'une couleur est bien sélectionnée */
   optionCouleur.addEventListener("input", (e) => {
@@ -70,43 +140,3 @@ function controleOption() {
     }
   });
 }
-
-/* Ajouter des produits dans le localStorage au clic du bouton*/
-ajoutPanier.addEventListener("click", (e) => {
-  controleOption();
-  e.preventDefault;
-  let couleur = optionCouleur.value;
-  let quantité = Number(nombreProduit.value);
-  let produitDansLocalStorage = [];
-  panier = [idProduit, couleur, quantité];
-
-  /* Si il y a déjà des produits dans le localStorage */
-  if (localStorage.getItem("produit")) {
-    /*récupération des donnés dans le localStorage */
-    produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
-
-    /* Vérification qu'un produit de même id et même couleur se trouve déjà dans localStorage */
-    let objetPanier = produitDansLocalStorage.findIndex(
-      (element) => element[0] === panier[0] && element[1] === panier[1]
-    );
-
-    /* Si même id et même couleur, alors ajout de la quantité */
-    if (objetPanier != -1) {
-      produitDansLocalStorage[objetPanier][2] += panier[2];
-    } else if ((objetPanier = -1)) {
-      /* Si different, alors ajout au panier */
-      produitDansLocalStorage.push(panier);
-    }
-
-    /* Envoie au localeStorage */
-    localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
-    alert("Votre produit a été ajouter au panier");
-
-    /* Si le localStorage est vide, envoie au panier puis dans localStorage */
-  } else {
-    produitDansLocalStorage = [];
-    produitDansLocalStorage.push(panier);
-    localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
-    alert("Votre produit a été ajouter au panier");
-  }
-});
