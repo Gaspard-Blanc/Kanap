@@ -1,8 +1,7 @@
 const produits = document.getElementById("cart__items");
 const nombreTotalArticle = document.getElementById("totalQuantity");
 const prixTotal = document.getElementById("totalPrice");
-const boutonSupprimer = document.querySelectorAll(".deleteItem");
-const quantiteArticle = document.querySelector(".itemQuantity");
+//const quantiteArticle = document.querySelectorAll(".itemQuantity");
 
 let prixTotalParArticle = 0;
 let prixTotalArticles = 0;
@@ -24,11 +23,12 @@ for (let i = 0; i < produitDansLocalStorage.length; i++) {
       }
     })
     .then(function (donnees) {
-      console.log(donnees);
       prixArticle = donnees.price;
       produit(donnees, produitDansLocalStorage[i]);
       calculNombreArticle();
-      changementQuantite();
+      changementQuantite(donnees, produitPanier);
+      calculPrixTotal(donnees);
+      supprimerArticle();
     })
     .catch(function (erreur) {
       console.log(erreur);
@@ -45,22 +45,77 @@ function calculNombreArticle() {
   });
 }
 
-/* Calcul du prix total */
-function calculPrixTotal() {
-  let quantiteArticle = document.querySelectorAll(".itemQuantity");
-  prixTotalArticle = 0;
-  for (i = 0; i < quantiteArticle.length; i++) {
-    prixTotalParArticle = prixArticle * Number(quantiteArticle[i].value);
+/* Calcul du prix total par article (même id et même couleur)*/
+function calculPrixTotal(donnees) {
+  produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
 
-    console.log(quantiteArticle);
-    console.log("prix: " + prixArticle);
+  for (let i = 0; i < produitDansLocalStorage.length; i++) {
+    produitPanier = produitDansLocalStorage[i];
+    if (
+      produitPanier[0] === produits.children[0].dataset.id &&
+      produitPanier[1] === produits.children[0].dataset.color
+    ) {
+      prixTotalParArticle = produitPanier[2] * donnees.price;
+      console.log(
+        "Total pour le " +
+          donnees.name +
+          " de couleur " +
+          produits.children[0].dataset.color +
+          ": " +
+          prixTotalParArticle
+      );
+    }
   }
   prixTotalArticles += prixTotalParArticle;
-
   prixTotal.textContent = prixTotalArticles;
 }
 
-/*Insertions des données récupérées dans le code HTML*/
+/* Changement du nombre de produits et MAJ du localStorage */
+function changementQuantite(donnees) {
+  const quantiteArticles = document.querySelectorAll(".itemQuantity");
+  quantiteArticles.forEach((quantiteArticle) => {
+    quantiteArticle.addEventListener("change", (e) => {
+      let articleAModifier = quantiteArticle.closest(".cart__item");
+      produitDansLocalStorage.map((produit) => {
+        if (
+          produit[0] === articleAModifier.dataset.id &&
+          produit[1] === articleAModifier.dataset.color
+        ) {
+          produit[2] = e.target.value;
+        }
+        localStorage.setItem(
+          "produit",
+          JSON.stringify(produitDansLocalStorage)
+        );
+      });
+
+      if (e.target.value > 0 && e.target.value <= 100 && e.target.value != 0) {
+        calculNombreArticle();
+      } else {
+        alert("Veuillez choisir une quantité comprise entre 0 et 100");
+      }
+      location.reload();
+      calculPrixTotal(donnees);
+    });
+  });
+}
+
+/* Bouton Supprimer */
+function supprimerArticle() {
+  const boutonSupprimer = document.querySelectorAll("p.deleteItem");
+  console.log(boutonSupprimer);
+  boutonSupprimer.forEach((boutons) => {
+    const produitASupprimer = boutons.closest(".cart__item");
+    console.log(produitASupprimer);
+    boutons.addEventListener("click", (i) => {
+      console.log("coucou");
+      console.log(i);
+      i.removeChild("article");
+    });
+  });
+}
+
+/* Insertions des données récupérées dans le code HTML */
 let produit = function (donnees, produitPanier) {
   const codeHtmlProduits = `<article class="cart__item" data-id="${produitPanier[0]}" data-color="${produitPanier[1]}">
   <div class="cart__item__img">
@@ -74,51 +129,14 @@ let produit = function (donnees, produitPanier) {
   </div>
   <div class="cart__item__content__settings">
   <div class="cart__item__content__settings__quantity">
-    <p>Qté : </p>
-    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${produitPanier[2]}">
-    </div>
-    <div class="cart__item__content__settings__delete">
-    <p class="deleteItem">Supprimer</p>
-    </div>
-    </div>
-    </div>
-    </article>`;
+  <p>Qté : </p>
+  <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${produitPanier[2]}">
+  </div>
+  <div class="cart__item__content__settings__delete">
+  <p class="deleteItem">Supprimer</p>
+  </div>
+  </div>
+  </div>
+  </article>`;
   produits.insertAdjacentHTML("afterbegin", codeHtmlProduits);
 };
-
-/* Changement du nombre de produits et MAJ du localStorage */
-function changementQuantite() {
-  const quantiteArticles = document.querySelectorAll(".itemQuantity");
-  quantiteArticles.forEach((quantiteArticle) => {
-    quantiteArticle.addEventListener("change", (e) => {
-      let articleAModifier = quantiteArticle.closest(".cart__item");
-      e.preventDefault;
-      console.log(articleAModifier.dataset.color);
-
-      produitDansLocalStorage.map((produit) => {
-        console.log(produit[0]);
-        if (
-          produit[0] === articleAModifier.dataset.id &&
-          produit[1] === articleAModifier.dataset.color
-        ) {
-          produit[2] = e.target.value;
-        }
-        localStorage.setItem(
-          "produit",
-          JSON.stringify(produitDansLocalStorage)
-        );
-      });
-
-      if (e.target.value > 0 && e.target.value <= 100) {
-        calculNombreArticle();
-
-        console.log("nouvelle quantité: " + quantiteArticle.value);
-      } else {
-        alert("Veuillez choisir une quantité comprise entre 0 et 100");
-      }
-    });
-    calculPrixTotal();
-  });
-}
-
-//
