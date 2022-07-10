@@ -109,28 +109,30 @@ function changementQuantite(donnees) {
 
 function supprimerArticle() {
   const boutonSupprimer = document.querySelectorAll("p.deleteItem");
-  console.log(produitDansLocalStorage);
-  console.log(produitPanier);
+  //console.log(produitDansLocalStorage);
 
   console.log(boutonSupprimer);
   boutonSupprimer.forEach((boutons) => {
     const produitASupprimer = boutons.closest(".cart__item");
     boutons.addEventListener("click", () => {
       produitASupprimer.remove("article");
-      console.log(produitDansLocalStorage);
-      console.log(produitASupprimer.dataset.id);
 
-      for (i = 0; i <= produitDansLocalStorage.lenght; i++) {
+      for (var i = 0; i < produitDansLocalStorage.length; i++) {
         produitPanier = produitDansLocalStorage[i];
+        //console.log(produitPanier[0]);
+
         if (produitASupprimer.dataset.id == produitPanier[0]) {
-          let objIndex = produitPanier[0].indexOf();
-          produitPanier[0].splice(objIndex, 1);
+          let objIndex = produitDansLocalStorage.indexOf(produitPanier);
           console.log(objIndex);
+          console.log(produitPanier[0]);
+          console.log(produitDansLocalStorage);
+          produitDansLocalStorage.splice(objIndex, 1);
+          //console.log(produitASupprimer.dataset.id);
         }
       }
 
-      //      localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
-      //location.reload();
+      localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+      location.reload();
     });
   });
 }
