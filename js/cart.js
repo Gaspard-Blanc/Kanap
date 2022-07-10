@@ -1,7 +1,11 @@
+/*----------------------- Partie panier -----------------------*/
+
 const produits = document.getElementById("cart__items");
+const article = document.querySelectorAll(".cart__item");
 const nombreTotalArticle = document.getElementById("totalQuantity");
 const prixTotal = document.getElementById("totalPrice");
-//const quantiteArticle = document.querySelectorAll(".itemQuantity");
+const quantiteArticles = document.querySelectorAll(".itemQuantity");
+const boutonSupprimer = document.querySelectorAll("p.deleteItem");
 
 let prixTotalParArticle = 0;
 let prixTotalArticles = 0;
@@ -55,6 +59,7 @@ function calculPrixTotal(donnees) {
       produitPanier[0] === produits.children[0].dataset.id &&
       produitPanier[1] === produits.children[0].dataset.color
     ) {
+      console.log(produits.children[0]);
       prixTotalParArticle = produitPanier[2] * donnees.price;
       console.log(
         "Total pour le " +
@@ -101,16 +106,31 @@ function changementQuantite(donnees) {
 }
 
 /* Bouton Supprimer */
+
 function supprimerArticle() {
   const boutonSupprimer = document.querySelectorAll("p.deleteItem");
+  console.log(produitDansLocalStorage);
+  console.log(produitPanier);
+
   console.log(boutonSupprimer);
   boutonSupprimer.forEach((boutons) => {
     const produitASupprimer = boutons.closest(".cart__item");
-    console.log(produitASupprimer);
-    boutons.addEventListener("click", (i) => {
-      console.log("coucou");
-      console.log(i);
-      i.removeChild("article");
+    boutons.addEventListener("click", () => {
+      produitASupprimer.remove("article");
+      console.log(produitDansLocalStorage);
+      console.log(produitASupprimer.dataset.id);
+
+      for (i = 0; i <= produitDansLocalStorage.lenght; i++) {
+        produitPanier = produitDansLocalStorage[i];
+        if (produitASupprimer.dataset.id == produitPanier[0]) {
+          let objIndex = produitPanier[0].indexOf();
+          produitPanier[0].splice(objIndex, 1);
+          console.log(objIndex);
+        }
+      }
+
+      //      localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+      //location.reload();
     });
   });
 }
@@ -140,3 +160,145 @@ let produit = function (donnees, produitPanier) {
   </article>`;
   produits.insertAdjacentHTML("afterbegin", codeHtmlProduits);
 };
+
+/*----------------------- Partie formulaire -----------------------*/
+
+const prenom = document.getElementById("firstName");
+const nom = document.getElementById("lastName");
+const adresse = document.getElementById("address");
+const ville = document.getElementById("city");
+const email = document.getElementById("email");
+const commande = document.getElementById("order");
+
+let regexGeneral = /^[a-zA-Z\-çñàéèêëïîôüù ]{2,}$/;
+let regexEmail = /^[A-Za-z0-9\-\.]+@([A-Za-z0-9\-]+\.)+[A-Za-z0-9-]{2,4}$/;
+let regexAdresse = /^[0-9a-zA-Z\s,.'-çñàéèêëïîôüù]{3,}$/;
+
+/* Vérification du champ Prénom */
+prenom.addEventListener("input", (e) => {
+  e.preventDefault();
+  if (regexGeneral.test(prenom.value) == false || prenom.value == "") {
+    document.getElementById("firstNameErrorMsg").innerHTML =
+      "Attention, votre 'Prénom' n'est pas valide";
+    return false;
+  } else {
+    document.getElementById("firstNameErrorMsg").innerHTML = "Ok, c'est bon";
+    return true;
+  }
+});
+
+/* Vérification du champ Nom */
+nom.addEventListener("input", (e) => {
+  e.preventDefault();
+  if (regexGeneral.test(nom.value) == false || nom.value == "") {
+    document.getElementById("lastNameErrorMsg").innerHTML =
+      "Attention, votre 'Nom' n'est pas valide";
+    return false;
+  } else {
+    document.getElementById("lastNameErrorMsg").innerHTML = "Ok, c'est bon";
+    return true;
+  }
+});
+
+/* Vérification du champ Adresse */
+adresse.addEventListener("input", (e) => {
+  e.preventDefault();
+  if (regexAdresse.test(adresse.value) == false || adresse.value == "") {
+    document.getElementById("addressErrorMsg").innerHTML =
+      "Attention, votre 'Adresse' n'est pas valide";
+    return false;
+  } else {
+    document.getElementById("addressErrorMsg").innerHTML = "Ok, c'est bon";
+    return true;
+  }
+});
+
+/* Vérification du champ Ville */
+ville.addEventListener("input", (e) => {
+  e.preventDefault();
+  if (regexGeneral.test(ville.value) == false || ville.value == "") {
+    document.getElementById("cityErrorMsg").innerHTML =
+      "Attention, votre 'Nom' n'est pas valide";
+    return false;
+  } else {
+    document.getElementById("cityErrorMsg").innerHTML = "Ok, c'est bon";
+    return true;
+  }
+});
+
+/* Vérification du champ Email */
+email.addEventListener("input", (e) => {
+  e.preventDefault();
+  if (regexEmail.test(email.value) == false || email.value == "") {
+    document.getElementById("emailErrorMsg").innerHTML =
+      "Attention, votre 'Email' n'est pas valide";
+    return false;
+  } else {
+    document.getElementById("emailErrorMsg").innerHTML = "Ok, c'est bon";
+    return true;
+  }
+});
+
+/* Ajout des données utilisateur et du panier dans le au clic du bouton Commander */
+commande.addEventListener("click", (e) => {
+  e.preventDefault();
+  /* Récupération des données utilisateur */
+  let contact = {
+    firstName: prenom.value,
+    lastName: nom.value,
+    address: adresse.value,
+    city: ville.value,
+    email: email.value,
+  };
+
+  /* Vérification des champs non vides */
+  if (
+    prenom.value === "" ||
+    nom.value === "" ||
+    adresse.value === "" ||
+    ville.value === "" ||
+    email.value === ""
+  ) {
+    alert("Merci de rentrer les informations requises pour passer commande.");
+  } else if (
+    /* Vérification du bon remplissage des champs */
+    regexGeneral.test(nom.value) == false ||
+    regexGeneral.test(prenom.value) == false ||
+    regexAdresse.test(adresse.value) == false ||
+    regexGeneral.test(ville.value) == false ||
+    regexEmail.test(email.value) == false
+  ) {
+    alert("Attention, veuillez renseigner correctement vos coordonnées.");
+  }
+
+  /* Récupération des ID des produits dans le localStorage */
+  let products = [];
+
+  produitDansLocalStorage.forEach((produit) => {
+    for (i = 0; i <= produitDansLocalStorage.lenght; i++) {
+      produitPanier = produitDansLocalStorage[i];
+    }
+    products.push(produit[0]);
+  });
+
+  /* Envoie des données utilisateur et du panier à l'API */
+  let commandeFinal = { contact, products };
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(commandeFinal),
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then((confirm) => {
+      window.location.href = "./confirmation.html?orderId=" + confirm.orderId;
+      localStorage.clear();
+    })
+    .catch((error) => {
+      console.log("une erreur est survenue", error);
+    });
+});
