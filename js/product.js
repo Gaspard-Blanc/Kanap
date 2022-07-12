@@ -67,7 +67,7 @@ function ajoutProduit() {
       quantitéSelectionner = nombreProduit.value;
       console.log("quantité chosie: " + quantitéSelectionner);
     } else {
-      alert("Veuillez choisir une quantité comprise entre 0 et 100");
+      alert("Veuillez choisir une quantité comprise entre 1 et 100");
       nombreProduit.setAttribute("value", (nombreProduit.value = 0));
       return;
     }

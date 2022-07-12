@@ -11,7 +11,7 @@ let prixTotalParArticle = 0;
 let prixTotalArticles = 0;
 let quantitéSelectionner = 0;
 let prixArticle = 0;
-let panier = [];
+//let panier = [];
 
 /* Récupérer les données du localStorage */
 let produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
@@ -99,19 +99,17 @@ function changementQuantite(donnees) {
       } else {
         alert("Veuillez choisir une quantité comprise entre 0 et 100");
       }
+
       location.reload();
       calculPrixTotal(donnees);
     });
   });
 }
 
-/* Bouton Supprimer */
-
+/* Supprission d'un article (même id et même couleur) et MAJ du localStorage */
 function supprimerArticle() {
   const boutonSupprimer = document.querySelectorAll("p.deleteItem");
-  //console.log(produitDansLocalStorage);
 
-  console.log(boutonSupprimer);
   boutonSupprimer.forEach((boutons) => {
     const produitASupprimer = boutons.closest(".cart__item");
     boutons.addEventListener("click", () => {
@@ -119,19 +117,28 @@ function supprimerArticle() {
 
       for (var i = 0; i < produitDansLocalStorage.length; i++) {
         produitPanier = produitDansLocalStorage[i];
-        //console.log(produitPanier[0]);
 
-        if (produitASupprimer.dataset.id == produitPanier[0]) {
+        if (
+          produitASupprimer.dataset.id == produitPanier[0] &&
+          produitASupprimer.dataset.color == produitPanier[1]
+        ) {
           let objIndex = produitDansLocalStorage.indexOf(produitPanier);
-          console.log(objIndex);
-          console.log(produitPanier[0]);
-          console.log(produitDansLocalStorage);
           produitDansLocalStorage.splice(objIndex, 1);
-          //console.log(produitASupprimer.dataset.id);
         }
       }
 
-      localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+      //localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
+
+      if (produitDansLocalStorage.length == 0) {
+        console.log(localStorage.length);
+        localStorage.removeItem("produit");
+        window.location.href = "./index.html";
+      } else {
+        localStorage.setItem(
+          "produit",
+          JSON.stringify(produitDansLocalStorage)
+        );
+      }
       location.reload();
     });
   });
@@ -271,36 +278,36 @@ commande.addEventListener("click", (e) => {
     regexEmail.test(email.value) == false
   ) {
     alert("Attention, veuillez renseigner correctement vos coordonnées.");
-  }
+  } else {
+    /* Récupération des ID des produits dans le localStorage */
+    let products = [];
 
-  /* Récupération des ID des produits dans le localStorage */
-  let products = [];
-
-  produitDansLocalStorage.forEach((produit) => {
-    for (i = 0; i <= produitDansLocalStorage.lenght; i++) {
-      produitPanier = produitDansLocalStorage[i];
-    }
-    products.push(produit[0]);
-  });
-
-  /* Envoie des données utilisateur et du panier à l'API */
-  let commandeFinal = { contact, products };
-  fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify(commandeFinal),
-  })
-    .then((res) => {
-      return res.json();
-    })
-    .then((confirm) => {
-      window.location.href = "./confirmation.html?orderId=" + confirm.orderId;
-      localStorage.clear();
-    })
-    .catch((error) => {
-      console.log("une erreur est survenue", error);
+    produitDansLocalStorage.forEach((produit) => {
+      for (i = 0; i <= produitDansLocalStorage.lenght; i++) {
+        produitPanier = produitDansLocalStorage[i];
+      }
+      products.push(produit[0]);
     });
+
+    /* Envoie des données utilisateur et du panier à l'API */
+    let commandeFinal = { contact, products };
+    fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(commandeFinal),
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((confirm) => {
+        window.location.href = "./confirmation.html?orderId=" + confirm.orderId;
+        localStorage.clear();
+      })
+      .catch((error) => {
+        console.log("Une erreur est survenue", error);
+      });
+  }
 });
