@@ -49,17 +49,17 @@ function calculNombreArticle() {
   });
 }
 
-/* Calcul du prix total par article (même id et même couleur)*/
+/* Calcul du prix total */
 function calculPrixTotal(donnees) {
   produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
 
+  /* Calcul du prix total par article (même id et même couleur) */
   for (let i = 0; i < produitDansLocalStorage.length; i++) {
     produitPanier = produitDansLocalStorage[i];
     if (
       produitPanier[0] === produits.children[0].dataset.id &&
       produitPanier[1] === produits.children[0].dataset.color
     ) {
-      console.log(produits.children[0]);
       prixTotalParArticle = produitPanier[2] * donnees.price;
       console.log(
         "Total pour le " +
@@ -101,12 +101,11 @@ function changementQuantite(donnees) {
       }
 
       location.reload();
-      calculPrixTotal(donnees);
     });
   });
 }
 
-/* Supprission d'un article (même id et même couleur) et MAJ du localStorage */
+/* Suppression d'un article (même id et même couleur) et MAJ du localStorage */
 function supprimerArticle() {
   const boutonSupprimer = document.querySelectorAll("p.deleteItem");
 
@@ -127,10 +126,7 @@ function supprimerArticle() {
         }
       }
 
-      //localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
-
       if (produitDansLocalStorage.length == 0) {
-        console.log(localStorage.length);
         localStorage.removeItem("produit");
         window.location.href = "./index.html";
       } else {
@@ -139,6 +135,7 @@ function supprimerArticle() {
           JSON.stringify(produitDansLocalStorage)
         );
       }
+
       location.reload();
     });
   });
@@ -181,7 +178,7 @@ const commande = document.getElementById("order");
 
 let regexGeneral = /^[a-zA-Z\-çñàéèêëïîôüù ]{2,}$/;
 let regexEmail = /^[A-Za-z0-9\-\.]+@([A-Za-z0-9\-]+\.)+[A-Za-z0-9-]{2,4}$/;
-let regexAdresse = /^[0-9a-zA-Z\s,.'-çñàéèêëïîôüù]{3,}$/;
+let regexAdresse = /^[0-9a-zA-Z\s,.'-çñàéèêëïîôüù]{6,}$/;
 
 /* Vérification du champ Prénom */
 prenom.addEventListener("input", (e) => {
@@ -191,7 +188,7 @@ prenom.addEventListener("input", (e) => {
       "Attention, votre 'Prénom' n'est pas valide";
     return false;
   } else {
-    document.getElementById("firstNameErrorMsg").innerHTML = "Ok, c'est bon";
+    document.getElementById("firstNameErrorMsg").innerHTML = "";
     return true;
   }
 });
@@ -204,7 +201,7 @@ nom.addEventListener("input", (e) => {
       "Attention, votre 'Nom' n'est pas valide";
     return false;
   } else {
-    document.getElementById("lastNameErrorMsg").innerHTML = "Ok, c'est bon";
+    document.getElementById("lastNameErrorMsg").innerHTML = "";
     return true;
   }
 });
@@ -217,7 +214,7 @@ adresse.addEventListener("input", (e) => {
       "Attention, votre 'Adresse' n'est pas valide";
     return false;
   } else {
-    document.getElementById("addressErrorMsg").innerHTML = "Ok, c'est bon";
+    document.getElementById("addressErrorMsg").innerHTML = "";
     return true;
   }
 });
@@ -230,7 +227,7 @@ ville.addEventListener("input", (e) => {
       "Attention, votre 'Nom' n'est pas valide";
     return false;
   } else {
-    document.getElementById("cityErrorMsg").innerHTML = "Ok, c'est bon";
+    document.getElementById("cityErrorMsg").innerHTML = "";
     return true;
   }
 });
@@ -243,7 +240,7 @@ email.addEventListener("input", (e) => {
       "Attention, votre 'Email' n'est pas valide";
     return false;
   } else {
-    document.getElementById("emailErrorMsg").innerHTML = "Ok, c'est bon";
+    document.getElementById("emailErrorMsg").innerHTML = "";
     return true;
   }
 });
