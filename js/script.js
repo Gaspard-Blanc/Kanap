@@ -16,6 +16,7 @@ fetch("http://localhost:3000/api/products")
 /*Insertions des données récupérées dans le code HTML*/
 const produits = document.getElementById("items");
 
+/* Pour chaque produit les données sont insérées dans le code HTML via une boucle */
 let produit = function (donnees) {
   for (let i = 0; i < donnees.length; i++) {
     const codeHtmlProduits = `<a href="product.html?id=${donnees[i]._id}">

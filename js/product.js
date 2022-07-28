@@ -64,11 +64,14 @@ function ajoutProduit() {
       nombreProduit.value <= 100 &&
       nombreProduit.value != 0
     ) {
-      quantitéSelectionner = nombreProduit.value;
+      quantitéSelectionner = Math.round(nombreProduit.value);
+      if (quantitéSelectionner < 1) {
+        quantitéSelectionner = 1;
+      }
       console.log("quantité choisie: " + quantitéSelectionner);
     } else {
       alert("Veuillez choisir une quantité comprise entre 1 et 100");
-      nombreProduit.setAttribute("value", (nombreProduit.value = 0));
+      nombreProduit.setAttribute("value", (nombreProduit.value = 1));
       return;
     }
 
@@ -100,6 +103,7 @@ function ajoutProduit() {
       }
 
       /* Envoie au localeStorage */
+      produitDansLocalStorage.sort();
       localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
       alert("Votre produit a été ajouter au panier");
 

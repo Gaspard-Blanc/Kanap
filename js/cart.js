@@ -11,7 +11,6 @@ let prixTotalParArticle = 0;
 let prixTotalArticles = 0;
 let quantitéSelectionner = 0;
 let prixArticle = 0;
-//let panier = [];
 
 /* Récupérer les données du localStorage */
 let produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
@@ -28,7 +27,7 @@ for (let i = 0; i < produitDansLocalStorage.length; i++) {
     })
     .then(function (donnees) {
       prixArticle = donnees.price;
-      produit(donnees, produitDansLocalStorage[i]);
+      produit(donnees, produitDansLocalStorage[i], produitDansLocalStorage);
       calculNombreArticle();
       changementQuantite(donnees, produitPanier);
       calculPrixTotal(donnees);
@@ -52,7 +51,6 @@ function calculNombreArticle() {
 /* Calcul du prix total */
 function calculPrixTotal(donnees) {
   produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
-
   /* Calcul du prix total par article (même id et même couleur) */
   for (let i = 0; i < produitDansLocalStorage.length; i++) {
     produitPanier = produitDansLocalStorage[i];
@@ -76,7 +74,7 @@ function calculPrixTotal(donnees) {
 }
 
 /* Changement du nombre de produits et MAJ du localStorage */
-function changementQuantite(donnees) {
+function changementQuantite() {
   const quantiteArticles = document.querySelectorAll(".itemQuantity");
   quantiteArticles.forEach((quantiteArticle) => {
     quantiteArticle.addEventListener("change", (e) => {
@@ -86,8 +84,12 @@ function changementQuantite(donnees) {
           produit[0] === articleAModifier.dataset.id &&
           produit[1] === articleAModifier.dataset.color
         ) {
-          produit[2] = e.target.value;
+          produit[2] = Math.round(e.target.value);
+          if (produit[2] < 1) {
+            produit[2] = 1;
+          }
         }
+        console.log(produitDansLocalStorage);
         localStorage.setItem(
           "produit",
           JSON.stringify(produitDansLocalStorage)
@@ -97,7 +99,8 @@ function changementQuantite(donnees) {
       if (e.target.value > 0 && e.target.value <= 100 && e.target.value != 0) {
         calculNombreArticle();
       } else {
-        alert("Veuillez choisir une quantité comprise entre 0 et 100");
+        alert("La quantité doit être comprise entre 1 et 100");
+        e.target.value = 1;
       }
 
       location.reload();
@@ -142,7 +145,7 @@ function supprimerArticle() {
 }
 
 /* Insertions des données récupérées dans le code HTML */
-let produit = function (donnees, produitPanier) {
+let produit = function (donnees, produitPanier, produitDansLocalStorage) {
   const codeHtmlProduits = `<article class="cart__item" data-id="${produitPanier[0]}" data-color="${produitPanier[1]}">
   <div class="cart__item__img">
   <img src="${donnees.imageUrl}" alt="${donnees.atlTxt}">
@@ -164,7 +167,10 @@ let produit = function (donnees, produitPanier) {
   </div>
   </div>
   </article>`;
-  produits.insertAdjacentHTML("afterbegin", codeHtmlProduits);
+  console.log(produitPanier);
+  console.log(produitDansLocalStorage);
+  produitDansLocalStorage.sort();
+  produits.insertAdjacentHTML("beforeend", codeHtmlProduits);
 };
 
 /*----------------------- Partie formulaire -----------------------*/
