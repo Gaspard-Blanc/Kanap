@@ -57,21 +57,22 @@ function ajoutProduit() {
     let quantité = Number(nombreProduit.value);
     let produitDansLocalStorage = [];
     panier = [idProduit, couleur, quantité];
+    console.log(panier[2]);
 
-    /* Controle que la quantité se situe entre 0 et 100 */
+    /* Controle que la quantité se situe entre 1 et 100 */
     if (
-      nombreProduit.value > 0 &&
+      nombreProduit.value >= 1 &&
       nombreProduit.value <= 100 &&
       nombreProduit.value != 0
     ) {
       quantitéSelectionner = Math.round(nombreProduit.value);
       if (quantitéSelectionner < 1) {
-        quantitéSelectionner = 1;
+        alert("Attention, la quantité doit être comprise entre 1 et 100");
       }
       console.log("quantité choisie: " + quantitéSelectionner);
     } else {
       alert("Veuillez choisir une quantité comprise entre 1 et 100");
-      nombreProduit.setAttribute("value", (nombreProduit.value = 1));
+      nombreProduit.setAttribute("value", (quantité = 1));
       return;
     }
 
