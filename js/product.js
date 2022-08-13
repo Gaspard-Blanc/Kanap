@@ -52,7 +52,7 @@ fetch("http://localhost:3000/api/products/" + idProduit)
 
 /* Ajouter des produits dans le localStorage au clic du bouton*/
 function ajoutProduit() {
-  ajoutPanier.addEventListener("click", () => {
+  ajoutPanier.addEventListener("click", (e) => {
     let couleur = optionCouleur.value;
     let quantité = Number(nombreProduit.value);
     let produitDansLocalStorage = [];
@@ -73,6 +73,7 @@ function ajoutProduit() {
     } else {
       alert("Veuillez choisir une quantité comprise entre 1 et 100");
       nombreProduit.setAttribute("value", (quantité = 1));
+      nombreProduit.value = 1;
       return;
     }
 
@@ -105,6 +106,7 @@ function ajoutProduit() {
 
       /* Envoie au localeStorage */
       produitDansLocalStorage.sort();
+      console.log(produitDansLocalStorage);
       localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
       alert("Votre produit a été ajouter au panier");
 
@@ -112,6 +114,7 @@ function ajoutProduit() {
     } else {
       produitDansLocalStorage = [];
       produitDansLocalStorage.push(panier);
+      produitDansLocalStorage.sort();
       localStorage.setItem("produit", JSON.stringify(produitDansLocalStorage));
       alert("Votre produit a été ajouter au panier");
     }

@@ -14,29 +14,42 @@ let prixArticle = 0;
 
 /* Récupérer les données du localStorage */
 let produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
-let produitPanier = [];
+let donnees;
 
-for (let i = 0; i < produitDansLocalStorage.length; i++) {
-  produitPanier = produitDansLocalStorage[i];
-  /*Requête de l’API pour lui demander les informations du produit*/
-  fetch("http://localhost:3000/api/products/" + produitPanier[0])
-    .then(function (reponse) {
-      if (reponse.ok) {
-        return reponse.json();
+/*Requête de l’API pour lui demander les informations du produit*/
+const fetchProduits = async () => {
+  await fetch("http://localhost:3000/api/products")
+    .then((res) => res.json())
+    .then((json) => (donnees = json))
+    .catch((error) => console.error(error));
+
+  const localStorage = async () => {
+    if (produitDansLocalStorage) {
+      await produitDansLocalStorage;
+
+      for (let infoProduit of produitDansLocalStorage) {
+        const infoApi = donnees.find((p) => p._id === infoProduit[0]);
+
+        affichageProduit(infoProduit, infoApi);
+        calculNombreArticle();
+        console.log(infoProduit);
+        console.log(infoApi);
+
+        prixParArticle = infoProduit[2] * infoApi.price;
+        console.log(prixParArticle);
+        calculPrixTotal();
       }
-    })
-    .then(function (donnees) {
-      prixArticle = donnees.price;
-      produit(donnees, produitDansLocalStorage[i], produitDansLocalStorage);
-      calculNombreArticle();
-      changementQuantite(donnees, produitPanier);
-      calculPrixTotal(donnees);
-      supprimerArticle();
-    })
-    .catch(function (erreur) {
-      console.log(erreur);
-    });
-}
+    } else {
+      alert("Votre Panier est vide");
+      document.location.href = "./index.html";
+    }
+    changementQuantite();
+    supprimerArticle();
+  };
+  localStorage();
+};
+
+fetchProduits();
 
 /* Calcul du nombre d'articles */
 function calculNombreArticle() {
@@ -49,27 +62,8 @@ function calculNombreArticle() {
 }
 
 /* Calcul du prix total */
-function calculPrixTotal(donnees) {
-  produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
-  /* Calcul du prix total par article (même id et même couleur) */
-  for (let i = 0; i < produitDansLocalStorage.length; i++) {
-    produitPanier = produitDansLocalStorage[i];
-    if (
-      produitPanier[0] === produits.children[0].dataset.id &&
-      produitPanier[1] === produits.children[0].dataset.color
-    ) {
-      prixTotalParArticle = produitPanier[2] * donnees.price;
-      console.log(
-        "Total pour le " +
-          donnees.name +
-          " de couleur " +
-          produits.children[0].dataset.color +
-          ": " +
-          prixTotalParArticle
-      );
-    }
-  }
-  prixTotalArticles += prixTotalParArticle;
+function calculPrixTotal() {
+  prixTotalArticles += prixParArticle;
   prixTotal.textContent = prixTotalArticles;
 }
 
@@ -145,21 +139,21 @@ function supprimerArticle() {
 }
 
 /* Insertions des données récupérées dans le code HTML */
-let produit = function (donnees, produitPanier, produitDansLocalStorage) {
-  const codeHtmlProduits = `<article class="cart__item" data-id="${produitPanier[0]}" data-color="${produitPanier[1]}">
+let affichageProduit = function (infoProduit, infoApi) {
+  const codeHtmlProduits = `<article class="cart__item" data-id="${infoProduit[0]}" data-color="${infoProduit[1]}">
   <div class="cart__item__img">
-  <img src="${donnees.imageUrl}" alt="${donnees.atlTxt}">
+  <img src="${infoApi.imageUrl}" alt="${infoApi.altTxt}">
   </div>
   <div class="cart__item__content">
   <div class="cart__item__content__description">
-  <h2>${donnees.name}</h2>
-  <p>${produitPanier[1]}</p>
-  <p>${donnees.price} €</p>
+  <h2>${infoApi.name}</h2>
+  <p>${infoProduit[1]}</p>
+  <p>${infoApi.price} €</p>
   </div>
   <div class="cart__item__content__settings">
   <div class="cart__item__content__settings__quantity">
   <p>Qté : </p>
-  <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${produitPanier[2]}">
+  <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${infoProduit[2]}">
   </div>
   <div class="cart__item__content__settings__delete">
   <p class="deleteItem">Supprimer</p>
@@ -167,10 +161,9 @@ let produit = function (donnees, produitPanier, produitDansLocalStorage) {
   </div>
   </div>
   </article>`;
-  console.log(produitPanier);
-  console.log(produitDansLocalStorage);
+  produits.insertAdjacentHTML("afterbegin", codeHtmlProduits);
+
   produitDansLocalStorage.sort();
-  produits.insertAdjacentHTML("beforeend", codeHtmlProduits);
 };
 
 /*----------------------- Partie formulaire -----------------------*/
