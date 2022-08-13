@@ -16,14 +16,15 @@ let prixArticle = 0;
 let produitDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
 let donnees;
 
-/*Requête de l’API pour lui demander les informations du produit*/
-const fetchProduits = async () => {
+/*Requête de l’API pour lui demander les informations des produits*/
+const requeteProduits = async () => {
   await fetch("http://localhost:3000/api/products")
     .then((res) => res.json())
     .then((json) => (donnees = json))
     .catch((error) => console.error(error));
 
   const localStorage = async () => {
+    /* Si il y a un produit dans la localStorage */
     if (produitDansLocalStorage) {
       await produitDansLocalStorage;
 
@@ -32,24 +33,21 @@ const fetchProduits = async () => {
 
         affichageProduit(infoProduit, infoApi);
         calculNombreArticle();
-        console.log(infoProduit);
-        console.log(infoApi);
 
         prixParArticle = infoProduit[2] * infoApi.price;
-        console.log(prixParArticle);
         calculPrixTotal();
       }
+      /* Si le localStorage est vide */
     } else {
       alert("Votre Panier est vide");
-      document.location.href = "./index.html";
+      window.location.href = "./index.html";
     }
     changementQuantite();
     supprimerArticle();
   };
   localStorage();
 };
-
-fetchProduits();
+requeteProduits();
 
 /* Calcul du nombre d'articles */
 function calculNombreArticle() {
@@ -83,7 +81,6 @@ function changementQuantite() {
             produit[2] = 1;
           }
         }
-        console.log(produitDansLocalStorage);
         localStorage.setItem(
           "produit",
           JSON.stringify(produitDansLocalStorage)

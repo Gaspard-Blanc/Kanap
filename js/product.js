@@ -65,7 +65,9 @@ function ajoutProduit() {
       nombreProduit.value <= 100 &&
       nombreProduit.value != 0
     ) {
-      quantitéSelectionner = Math.round(nombreProduit.value);
+      panier[2] = Math.round(nombreProduit.value);
+      quantitéSelectionner = Math.round(panier[2]);
+      nombreProduit.value = quantitéSelectionner;
       if (quantitéSelectionner < 1) {
         alert("Attention, la quantité doit être comprise entre 1 et 100");
       }
