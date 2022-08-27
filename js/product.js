@@ -65,6 +65,7 @@ function ajoutProduit() {
       nombreProduit.value <= 100 &&
       nombreProduit.value != 0
     ) {
+      /* Empeche les décimales */
       panier[2] = Math.round(nombreProduit.value);
       quantitéSelectionner = Math.round(panier[2]);
       nombreProduit.value = quantitéSelectionner;

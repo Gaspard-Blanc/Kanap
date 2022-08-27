@@ -72,11 +72,14 @@ function changementQuantite() {
     quantiteArticle.addEventListener("change", (e) => {
       let articleAModifier = quantiteArticle.closest(".cart__item");
       produitDansLocalStorage.map((produit) => {
+        /* Controle que le produit à la même ID et la même couleur */
         if (
           produit[0] === articleAModifier.dataset.id &&
           produit[1] === articleAModifier.dataset.color
         ) {
+          /* Empeche les décimales */
           produit[2] = Math.round(e.target.value);
+          /* Met la valeur à 1 quand cette valeur est inférieur à 1 */
           if (produit[2] < 1) {
             produit[2] = 1;
           }
@@ -111,6 +114,7 @@ function supprimerArticle() {
       for (var i = 0; i < produitDansLocalStorage.length; i++) {
         produitPanier = produitDansLocalStorage[i];
 
+        /* Controle que le produit à la même ID et la même couleur */
         if (
           produitASupprimer.dataset.id == produitPanier[0] &&
           produitASupprimer.dataset.color == produitPanier[1]
@@ -120,6 +124,7 @@ function supprimerArticle() {
         }
       }
 
+      /* Renvoi sur la page d'accueil quand le panier est vide */
       if (produitDansLocalStorage.length == 0) {
         localStorage.removeItem("produit");
         window.location.href = "./index.html";
@@ -220,7 +225,7 @@ ville.addEventListener("input", (e) => {
   e.preventDefault();
   if (regexGeneral.test(ville.value) == false || ville.value == "") {
     document.getElementById("cityErrorMsg").innerHTML =
-      "Attention, votre 'Nom' n'est pas valide";
+      "Attention, votre 'Ville' n'est pas valide";
     return false;
   } else {
     document.getElementById("cityErrorMsg").innerHTML = "";

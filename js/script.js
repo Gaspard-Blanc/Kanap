@@ -7,7 +7,7 @@ fetch("http://localhost:3000/api/products")
   })
   .then(function (donnees) {
     console.log(donnees);
-    produit(donnees);
+    affichageProduits(donnees);
   })
   .catch(function (erreur) {
     console.log(erreur);
@@ -17,7 +17,7 @@ fetch("http://localhost:3000/api/products")
 const produits = document.getElementById("items");
 
 /* Pour chaque produit les données sont insérées dans le code HTML via une boucle */
-let produit = function (donnees) {
+function affichageProduits(donnees) {
   for (let i = 0; i < donnees.length; i++) {
     const codeHtmlProduits = `<a href="product.html?id=${donnees[i]._id}">
         <article>
@@ -28,4 +28,4 @@ let produit = function (donnees) {
       </a>`;
     produits.insertAdjacentHTML("afterbegin", codeHtmlProduits);
   }
-};
+}
